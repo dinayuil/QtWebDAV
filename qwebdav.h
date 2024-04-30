@@ -65,7 +65,7 @@ class QWEBDAVSHARED_EXPORT QWebdav : public QNetworkAccessManager
     Q_OBJECT
 
 public:
-    enum QWebdavConnectionType {HTTP = 1, HTTPS};
+    enum ConnectionType {HTTP = 1, HTTPS};
     enum QWebdavLockScope {LOCK_SCOPE_EXCLUSIVE, LOCK_SCOPE_SHARED};
     enum QWebdavLockDepth {LOCK_DEPTH_ZERO, LOCK_DEPTH_INFINITY};
 

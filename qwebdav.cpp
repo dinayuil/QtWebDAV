@@ -64,7 +64,7 @@ QWebdav::QWebdav (QObject *parent) : QNetworkAccessManager(parent)
 
 {
     qRegisterMetaType<QNetworkReply*>("QNetworkReply*");
-    connect(this, &QWebdav::finished, this, &QWebdav::replyFinished);
+//    connect(this, &QWebdav::finished, this, &QWebdav::replyFinished);
     connect(this, &QWebdav::authenticationRequired, this, &QWebdav::provideAuthenication);
 }
 
@@ -97,7 +97,7 @@ QString QWebdav::password() const
     return m_password;
 }
 
-QWebdav::QWebdavConnectionType QWebdav::connectionType() const
+QWebdav::ConnectionType QWebdav::connectionType() const
 {
     return m_currentConnectionType;
 }
@@ -107,7 +107,7 @@ bool QWebdav::isSSL() const
     return (m_currentConnectionType==QWebdav::HTTPS);
 }
 
-void QWebdav::setConnectionSettings(const QWebdavConnectionType connectionType,
+void QWebdav::setConnectionSettings(const ConnectionType connectionType,
                                     const QString& hostname,
                                     const QString& rootPath,
                                     const QString& username,
