@@ -515,6 +515,9 @@ QNetworkReply* QWebdav::propfind(const QString& path, const QWebdav::PropNames& 
     }
     query += "</D:prop>";
     query += "</D:propfind>";
+#ifdef DEBUG_WEBDAV
+    qDebug() << query;
+#endif
     return propfind(path, query.toUtf8(), depth);
 }
 

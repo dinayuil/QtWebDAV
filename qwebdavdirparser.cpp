@@ -222,8 +222,9 @@ void QWebdavDirParser::replyFinished()
             //        }
 
             if(contentType.contains("xml")) {
-                // DEBUG
-                //qDebug() << data;
+    #ifdef DEBUG_WEBDAV
+                qDebug() << data;
+    #endif
                 parseMultiResponse(data);
             }
         }
