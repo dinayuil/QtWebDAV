@@ -81,10 +81,10 @@ public:
     [[nodiscard]] QString rootPath() const;
     [[nodiscard]] QString username() const;
     [[nodiscard]] QString password() const;
-    [[nodiscard]] QWebdavConnectionType connectionType() const;
+    [[nodiscard]] ConnectionType connectionType() const;
     [[nodiscard]] bool isSSL() const;
 
-    void setConnectionSettings( const QWebdavConnectionType connectionType,
+    void setConnectionSettings( const ConnectionType connectionType,
                             const QString &hostname,
                             const QString &rootPath = "/",
                             const QString &username = "",
@@ -162,7 +162,7 @@ private:
     QString m_password;
     QUrl m_baseUrl;
 
-    QWebdavConnectionType m_currentConnectionType;
+    ConnectionType m_currentConnectionType;
 
     QNetworkReply *m_authenticator_lastReply;
 
