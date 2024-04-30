@@ -14,6 +14,8 @@ add_library(QtWebDAV SHARED
         qwebdavdirparser.h
         qwebdavitem.cpp
         qwebdavitem.h
+        qwebdavclient.h
+        qwebdavclient.cpp
         )
 
 target_link_libraries(QtWebDAV PUBLIC
