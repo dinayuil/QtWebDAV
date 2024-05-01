@@ -60,12 +60,16 @@ bool QWebdavClient::upload(QString localFile, QString remoteFile) const
     connect(reply, &QNetworkReply::uploadProgress, this, &QWebdavClient::uploadProgress);
     loop.exec();
     file.close();
+
+    // TODO delete reply?
     if(reply->error() == QNetworkReply::NoError) return true;
     return false;
 }
 
 void QWebdavClient::uploadProgress(qint64 bytesSent, qint64 bytesTotal) const
 {
+#ifdef DEBUG_WEBDAV
     qDebug() << "sent: " << bytesSent << ", total: " << bytesTotal;
+#endif
 }
 
