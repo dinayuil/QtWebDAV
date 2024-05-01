@@ -21,10 +21,11 @@ public:
         QObject *parent = nullptr);
 
     bool check(QString path) const;
-
+    bool upload(QString localFile, QString remoteFile) const;
 private:
     QWebdav* m_webdavManager;
 
+    void uploadProgress(qint64 bytesSent, qint64 bytesTotal) const;
 signals:
 
 };

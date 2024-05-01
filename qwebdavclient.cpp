@@ -45,8 +45,27 @@ bool QWebdavClient::check(QString path) const
         qDebug() << reply->readLine();
     }
 #endif
-
+    // TODO delete reply?
     if(reply->error() == QNetworkReply::NoError) return true;
     return false;
+}
+
+bool QWebdavClient::upload(QString localFile, QString remoteFile) const
+{
+    QFile file(localFile);
+    file.open(QIODevice::ReadOnly);
+    QEventLoop loop;
+    connect(m_webdavManager, &QWebdav::finished, &loop, &QEventLoop::quit);
+    QNetworkReply* reply = m_webdavManager->put(remoteFile, &file);
+    connect(reply, &QNetworkReply::uploadProgress, this, &QWebdavClient::uploadProgress);
+    loop.exec();
+    file.close();
+    if(reply->error() == QNetworkReply::NoError) return true;
+    return false;
+}
+
+void QWebdavClient::uploadProgress(qint64 bytesSent, qint64 bytesTotal) const
+{
+    qDebug() << "sent: " << bytesSent << ", total: " << bytesTotal;
 }
 
