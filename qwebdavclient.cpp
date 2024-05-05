@@ -66,10 +66,38 @@ bool QWebdavClient::upload(QString localFile, QString remoteFile) const
     return false;
 }
 
+bool QWebdavClient::download(QString localFile, QString remoteFile) const
+{
+    QEventLoop loop;
+    connect(m_webdavManager, &QWebdav::finished, &loop, &QEventLoop::quit);
+    QNetworkReply* reply = m_webdavManager->get(remoteFile);
+    connect(reply, &QNetworkReply::downloadProgress, this, &QWebdavClient::downloadProgress);
+    loop.exec();
+
+    QByteArray data = reply->readAll();
+#ifdef DEBUG_WEBDAV
+    qDebug() << "downloaded: " << data;
+#endif
+    QFile file(localFile);
+    file.open(QIODevice::WriteOnly);
+    file.write(data);
+    file.close();
+    // TODO delete reply?
+    if(reply->error() == QNetworkReply::NoError) return true;
+    return false;
+}
+
 void QWebdavClient::uploadProgress(qint64 bytesSent, qint64 bytesTotal) const
 {
 #ifdef DEBUG_WEBDAV
     qDebug() << "sent: " << bytesSent << ", total: " << bytesTotal;
+#endif
+}
+
+void QWebdavClient::downloadProgress(qint64 bytesReceived, qint64 bytesTotal) const
+{
+#ifdef DEBUG_WEBDAV
+    qDebug() << "receive: " << bytesReceived << ", total: " << bytesTotal;
 #endif
 }
 
