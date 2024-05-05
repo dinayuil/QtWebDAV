@@ -74,6 +74,8 @@ bool QWebdavClient::download(QString localFile, QString remoteFile) const
     connect(reply, &QNetworkReply::downloadProgress, this, &QWebdavClient::downloadProgress);
     loop.exec();
 
+    if(reply->error() != QNetworkReply::NoError) return false;  // TODO log error?
+
     QByteArray data = reply->readAll();
 #ifdef DEBUG_WEBDAV
     qDebug() << "downloaded: " << data;
@@ -83,8 +85,8 @@ bool QWebdavClient::download(QString localFile, QString remoteFile) const
     file.write(data);
     file.close();
     // TODO delete reply?
-    if(reply->error() == QNetworkReply::NoError) return true;
-    return false;
+
+    return true;
 }
 
 void QWebdavClient::uploadProgress(qint64 bytesSent, qint64 bytesTotal) const
