@@ -23,7 +23,7 @@ public:
     bool check(QString path) const;
     bool upload(QString localFile, QString remoteFile) const;
     bool download(QString localFile, QString remoteFile) const;
-
+    QStringList list(QString remoteDirectory) const;
 private:
     QWebdav* m_webdavManager;
 

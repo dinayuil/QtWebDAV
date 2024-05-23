@@ -1,5 +1,6 @@
 #include "qwebdavclient.h"
-
+#include <QDomDocument>
+#include <iostream>
 QWebdavClient::QWebdavClient(
     const QWebdav::ConnectionType connectionType,
     const QString &hostname,
@@ -55,7 +56,7 @@ bool QWebdavClient::upload(QString localFile, QString remoteFile) const
     QFile file(localFile);
     file.open(QIODevice::ReadOnly);
     QEventLoop loop;
-    connect(m_webdavManager, &QWebdav::finished, &loop, &QEventLoop::quit);
+    connect(m_webdavManager, &QWebdav::finished, &loop, &QEventLoop::quit); // TODO: time out?
     QNetworkReply* reply = m_webdavManager->put(remoteFile, &file);
     connect(reply, &QNetworkReply::uploadProgress, this, &QWebdavClient::uploadProgress);
     loop.exec();
@@ -69,7 +70,7 @@ bool QWebdavClient::upload(QString localFile, QString remoteFile) const
 bool QWebdavClient::download(QString localFile, QString remoteFile) const
 {
     QEventLoop loop;
-    connect(m_webdavManager, &QWebdav::finished, &loop, &QEventLoop::quit);
+    connect(m_webdavManager, &QWebdav::finished, &loop, &QEventLoop::quit); // TODO: time out?
     QNetworkReply* reply = m_webdavManager->get(remoteFile);
     connect(reply, &QNetworkReply::downloadProgress, this, &QWebdavClient::downloadProgress);
     loop.exec();
@@ -87,6 +88,35 @@ bool QWebdavClient::download(QString localFile, QString remoteFile) const
     // TODO delete reply?
 
     return true;
+}
+
+QStringList QWebdavClient::list(QString remoteDirectory) const
+{
+    QWebdav::PropNames props;
+//    props["DAV:"] = QStringList();
+//    props["DAV:"].append("resourcetype");
+
+    QTimer timer;
+    QEventLoop loop;
+    connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
+    connect(m_webdavManager, &QWebdav::finished, &loop, &QEventLoop::quit);
+    QNetworkReply* reply = m_webdavManager->propfind(remoteDirectory, props, 1);
+    timer.start(10000);
+    loop.exec();
+
+    QDomDocument doc;
+    doc.setContent(reply,QDomDocument::ParseOption::UseNamespaceProcessing);
+    QDomElement multistatus = doc.elementsByTagName("multistatus").at(0).toElement();
+    QDomNodeList responseElements = multistatus.elementsByTagName("response");
+    QStringList fileNameList;
+    for(int i = 0; i < responseElements.size(); i++)
+    {
+        QDomElement responseElement = responseElements.at(i).toElement();
+        QDomElement hrefElement = responseElement.elementsByTagName("href").at(0).toElement();
+        fileNameList.append(hrefElement.text());
+    }
+
+    return fileNameList;
 }
 
 void QWebdavClient::uploadProgress(qint64 bytesSent, qint64 bytesTotal) const
